@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 // import logo from './logo.svg';
 import './App.css';
+import Radium, { StyleRoot } from 'radium';
 import Person from './Person/Person';
-import person from './Person/Person';
-
 class App extends Component {
 
   state = {
@@ -21,12 +20,23 @@ deletePerson = (personIndex) => {
   this.setState({person: persons})
 }
 
-  chnageAgeInput = (event, id) => {
+  chnageAge = (event, id) => {
+    const personIndex =  this.state.person.findIndex(p => {
+      return p.id === id;
+    })
+
+    const s = {
+      ...this.state.person[personIndex]
+    };
+    
+    s.age = event.target.value;
+
+    const person = [...this.state.person];
+
+    person[personIndex] = s;
+
     this.setState({
-      person: [
-        {age: event.target.value},
-        {age: 44}
-      ]
+      person: person
     })
   }
 
@@ -47,7 +57,7 @@ deletePerson = (personIndex) => {
             click={() => this.deletePerson(index)}
             age={person.age} 
             key={person.id}
-            chnaged={this.chnageAgeInput}
+            change={(event) => this.chnageAge(event, person.id)}
             />
           })
           }
@@ -55,14 +65,26 @@ deletePerson = (personIndex) => {
       )
     }
 
+    const classes = [];
+    if(this.state.person.length <= 1) {
+      classes.push('green');
+    }
+
+    if(this.state.person.length <= 0) {
+      classes.push('bold');
+    }
+
     return (
+      <StyleRoot>
       <div className="App">
         <h1>This app component</h1>
+        <p className={classes.join(" ")}>Paragraph</p>
         <button onClick={this.toggleContent}>switch</button>
         {persons}
       </div>
+      </StyleRoot>
     );
   }
 }
 
-export default App;
+export default Radium(App);
